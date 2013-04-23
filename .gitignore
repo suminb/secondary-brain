@@ -1,7 +1,14 @@
+
+config.py
+
 *.py[cod]
 
 # C extensions
 *.so
+
+# OS-specific files
+.DS_Store
+.AppleDouble
 
 # Packages
 *.egg
@@ -10,7 +17,6 @@ dist
 build
 eggs
 parts
-bin
 var
 sdist
 develop-eggs
