@@ -51,8 +51,8 @@ def serialize(obj):
         return fields
 
 
-class Feed(Base):
+class Feed(Base, db.Model):
     __table__ = Table('feed', metadata, autoload=True)
 
-class FeedItem(Base):
+class FeedItem(Base, db.Model):
     __table__ = Table('feed_item', metadata, autoload=True)

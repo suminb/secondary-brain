@@ -31,11 +31,39 @@ def add_feed(feed_url):
         version=fp['version'],
         title=fp['channel']['title'],
         description=fp['channel']['description'],
-        )
+    )
 
     db.session.add(feed)
     db.session.commit()
 
+def fetch_feed_items():
+    """Parses a set of feeds and insert feed items into the database."""
+    
+    for feed in Feed.query.all():
+        fp = feedparser.parse(feed.feed_url)
+        timestamp_fetched = datetime.datetime.now()
+
+        for item in fp['items']:
+
+            print 'Processing "%s"' % item['link']
+
+            print item
+
+            feed_item = FeedItem(
+                id=str(uuid.uuid4()),
+                feed_id=feed.id,
+                timestamp_published=item['published'],
+                timestamp_fetched=timestamp_fetched,
+                title=item['title'],
+                link=item['link'],
+                description=item['summary'],
+            )
+
+            db.session.add(feed_item)
+
+        db.session.commit()
 
 if __name__ == '__main__':
-    add_feed('http://feeds.bbci.co.uk/news/video_and_audio/news_front_page/rss.xml?edition=uk')
+    #add_feed('http://feeds.bbci.co.uk/news/video_and_audio/news_front_page/rss.xml?edition=uk')
+
+    fetch_feed_items()
