@@ -41,7 +41,8 @@ def add_feed(feed_url):
         db.session.commit()
 
     except IntegrityError as e:
-        print '%s already exists.' % feed_url
+        print 'Feed already exists: %s' % feed_url
+        db.session.rollback()
 
 def fetch_feed_items():
     """Parses a set of feeds and insert feed items into the database."""
@@ -75,12 +76,43 @@ def fetch_feed_items():
                 )
 
                 db.session.add(feed_item)
+                db.session.commit()
 
         feed.timestamp_fetched = timestamp_fetched
+        db.session.commit()
+
+def build_word_index():
+    from bs4 import BeautifulSoup
+
+    for feed_item in FeedItem.query.filter(
+            FeedItem.timestamp_fetched >= datetime.datetime.now() - datetime.timedelta(minutes=3)
+        ).all():
+
+        text = feed_item.description
+
+        soup = BeautifulSoup(text)
+
+        # TODO: This is not sufficient
+        words = map(lambda w: w.lower(), soup.get_text().split())
+
+        print 'Indexing: %s' % words
+
+        for word in set(words):
+            word_index = WordIndex.query.get((word, feed_item.id))
+
+            if word_index != None:
+                print 'Already exists: %s : %s' % (word, feed_item.id)
+
+            else:
+                word_index = WordIndex(word=word, entry='feed_item', entry_id=feed_item.id)
+
+                db.session.add(word_index)
+
         db.session.commit()
 
 if __name__ == '__main__':
     #add_feed('http://feeds.bbci.co.uk/news/video_and_audio/news_front_page/rss.xml?edition=uk')
     #add_feed('http://uanews.org/rss/campus-news')
-    add_feed('http://feeds.foxnews.com/foxnews/health')
+    add_feed('http://finance.yahoo.com/insurance/?format=rss')
     fetch_feed_items()
+    #build_word_index()

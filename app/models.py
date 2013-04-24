@@ -56,3 +56,6 @@ class Feed(Base, db.Model):
 
 class FeedItem(Base, db.Model):
     __table__ = Table('feed_item', metadata, autoload=True)
+
+class WordIndex(Base, db.Model):
+    __table__ = Table('word_index', metadata, autoload=True)
