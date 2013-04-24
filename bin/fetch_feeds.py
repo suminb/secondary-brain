@@ -49,7 +49,7 @@ def fetch_feed_items():
 
     for feed in Feed.query.filter(or_(
             Feed.timestamp_fetched == None,
-            Feed.timestamp_fetched <= datetime.datetime.now() - datetime.timedelta(hours=1))
+            Feed.timestamp_fetched <= datetime.datetime.now() - datetime.timedelta(minutes=30))
         ).all():
 
         fp = feedparser.parse(feed.feed_url)
@@ -79,7 +79,7 @@ def fetch_feed_items():
                 db.session.commit()
 
         feed.timestamp_fetched = timestamp_fetched
-        db.session.commit()
+        #db.session.commit()
 
 def build_word_index():
     from bs4 import BeautifulSoup
@@ -113,6 +113,6 @@ def build_word_index():
 if __name__ == '__main__':
     #add_feed('http://feeds.bbci.co.uk/news/video_and_audio/news_front_page/rss.xml?edition=uk')
     #add_feed('http://uanews.org/rss/campus-news')
-    add_feed('http://finance.yahoo.com/insurance/?format=rss')
+    #add_feed('http://finance.yahoo.com/insurance/?format=rss')
     fetch_feed_items()
     #build_word_index()
