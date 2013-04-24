@@ -1,4 +1,4 @@
-
+import logging
 import requests
 
 USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_2) AppleWebKit/537.22 (KHTML, like Gecko) Chrome/25.0.1364.99 Safari/537.22'
@@ -34,6 +34,19 @@ def read_symbols(file_name):
     with open(file_name, 'r') as f:
         return f.read().split()
 
+def parse_date(text):
+    import re
+    s = re.search('Timestamp:(\d+)', text)
+
+    if s != None:
+        return s.group(1)
+    else:
+        raise Exception('parse_datetime: Timestamp not found.')
+
+def convert_to_date(epoch):
+    import time
+    return time.strftime('%Y%m%d', time.localtime(float(epoch)))
+
 if __name__ == '__main__':
 
     import time
@@ -43,9 +56,16 @@ if __name__ == '__main__':
     for symbol in read_symbols('bin/ticker_symbols.txt'):
         print 'Fetching data for %s' % symbol
         r = fetch_url(make_url(symbol))
+        text = r.text
 
-        file_name = 'tmp/%s-%s-%s.txt' % (symbol.lower(), date, '1d')
-        with open(file_name, 'w') as f:
-            f.write(r.text)
+        try:
+            date = convert_to_date(parse_date(text))
+
+            file_name = 'tmp/%s-%s-%s.txt' % (symbol.lower(), date, '1d')
+            with open(file_name, 'w') as f:
+                f.write(r.text)
+
+        except Exception as e:
+            logging.exception(e)
 
         time.sleep(1800/500.0)
