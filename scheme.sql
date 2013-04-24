@@ -68,6 +68,18 @@ ALTER TABLE ONLY feed
     ADD CONSTRAINT feed_pkey PRIMARY KEY (id);
 
 
+-- Table: word_index
+
+-- DROP TABLE word_index;
+
+CREATE TABLE word_index
+(
+  word character varying(255) NOT NULL,
+  entry character varying(255),
+  entry_id uuid NOT NULL,
+  CONSTRAINT "primary key" PRIMARY KEY (word , entry_id )
+)
+
 --
 -- Name: public; Type: ACL; Schema: -; Owner: postgres
 --
