@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import relationship, backref, sessionmaker
+from sqlalchemy.orm import sessionmaker
 from brain.models import Base, Market, Symbol
 import click
 
@@ -33,12 +33,21 @@ def create_db(db_uri):
 @click.option('--db-uri', default=DEFAULT_DB_URI, help='Database URI')
 @click.option('--market_id', help='Market ID (integer)')
 @click.option('--market_name', help='Market name (e.g., Nasdaq)')
-def insert_market(db_uri, market_id, market_name):
+@click.option('--open', required=True,
+              help='Time at which the market opens (e.g., 570 for 9:30)')
+@click.option('--close', required=True,
+              help='Time at which the market closes (e.g., 900 for 15:00)')
+def insert_market(db_uri, market_id, market_name, open, close):
     """Manually inserts a market entity to the database."""
+    assert 0 <= int(open) < 60 * 24
+    assert 0 <= int(close) < 60 * 24
+
     session = get_session(get_engine(db_uri))
     market = Market(
-                id=market_id,
-                name=market_name,
+        id=market_id,
+        name=market_name,
+        open=open,
+        close=close,
     )
     session.add(market)
     session.commit()
@@ -55,13 +64,11 @@ def import_symbols(db_uri, market_id, filename):
     with open(filename, 'r') as fin:
         for line in fin:
             symbol = Symbol(
-                        market_id=int(market_id),
-                        name=line.strip(),
+                market_id=int(market_id),
+                name=line.strip(),
             )
             session.add(symbol)
         session.commit()
-
-#cli = click.CommandCollection(sources=[create_db_cli, import_symbols_cli])
 
 
 if __name__ == '__main__':

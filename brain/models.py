@@ -15,6 +15,12 @@ class Market(Base):
     #: Represents a region to which this market belongs to (e.g., US, KR)
     region = Column(String)
 
+    #: Denotes time at which the market opens (e.g., 570 for 9:30)
+    open = Column(Integer)
+
+    #: Denotes time at which the market closes (e.g., 900 for 15:00)
+    close = Column(Integer)
+
     description = Column(Text)
 
 
