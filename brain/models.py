@@ -1,5 +1,7 @@
 from sqlalchemy import Column, Integer, BigInteger, String, Text
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import create_engine
+import click
 
 
 Base = declarative_base()
@@ -31,3 +33,21 @@ class Ticker(Base):
 
     id = Column(BigInteger, primary_key=True)
     symbol_id = Column(BigInteger)
+
+
+class Article(Base):
+    """Represents a news/blog article"""
+    __tablename__ = 'article'
+
+    id = Column(BigInteger, primary_key=True)
+
+
+@click.command()
+@click.option('--db-uri', default='sqlite:///default.db', help='Database URI')
+def create_db(db_uri):
+    engine = create_engine(db_uri, echo=False)
+    Base.metadata.create_all(engine)
+
+
+if __name__ == '__main__':
+    create_db()
