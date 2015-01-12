@@ -12,3 +12,19 @@ def test_models():
     assert hasattr(Market, 'id')
     assert hasattr(Symbol, 'id')
     assert hasattr(Ticker, 'id')
+
+
+def test_commands():
+    from click.testing import CliRunner
+    from brain.bin import DEFAULT_DB_URI, get_engine, get_session, create_db, \
+            insert_market
+
+    engine = get_engine(DEFAULT_DB_URI)
+    assert engine is not None
+
+    session = get_session(engine)
+    assert session is not None
+
+    runner = CliRunner()
+    runner.invoke(create_db, [DEFAULT_DB_URI])
+    runner.invoke(insert_market, [DEFAULT_DB_URI, 1, 'NASDAQ'])
