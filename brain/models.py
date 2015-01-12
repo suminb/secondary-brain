@@ -31,3 +31,10 @@ class Ticker(Base):
 
     id = Column(BigInteger, primary_key=True)
     symbol_id = Column(BigInteger)
+
+    # timestamp = Column()
+    # volume = Column()
+    # open = Column()
+    # close = Column()
+    # low = Column()
+    # high = Column()
