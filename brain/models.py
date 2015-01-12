@@ -31,7 +31,12 @@ class Symbol(Base):
 
     id = Column(Integer, primary_key=True)
     market_id = Column(BigInteger, ForeignKey('market.id'))
+
+    #: e.g., Amazon, Google, 다음카카오
     name = Column(String)
+
+    #: e.g., AMZN, GOOG, 035720
+    code = Column(String)
 
     market = relationship('Market', backref=backref('symbols'))
 
@@ -45,11 +50,13 @@ class Ticker(Base):
     symbol = relationship('Symbol', backref=backref('tickers'))
 
     # timestamp = Column()
+    # granularity = Column() # e.g., 5 min, 1 day, 1 week, etc.
     # volume = Column()
     # open = Column()
     # close = Column()
     # low = Column()
     # high = Column()
+
 
 class Article(Base):
     """Represents a news/blog article"""
