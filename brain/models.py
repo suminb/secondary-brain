@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from sqlalchemy import Column, Integer, BigInteger, String, Text, DateTime, \
     Float, Enum
 from sqlalchemy import ForeignKey, UniqueConstraint
