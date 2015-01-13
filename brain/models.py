@@ -1,5 +1,6 @@
-from sqlalchemy import Column, Integer, BigInteger, String, Text
-from sqlalchemy import ForeignKey
+from sqlalchemy import Column, Integer, BigInteger, String, Text, DateTime, \
+    Float, Enum
+from sqlalchemy import ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -28,6 +29,7 @@ class Symbol(Base):
     """This may represents a particular company (e.g., Google, Microsoft, etc.)
     or an index (e.g., S&P 500, KOSPI 200, etc.)"""
     __tablename__ = 'symbol'
+    __table_args__ = (UniqueConstraint('market_id', 'symbol', name='unique_symbol'),)
 
     id = Column(Integer, primary_key=True)
     market_id = Column(BigInteger, ForeignKey('market.id'))
@@ -36,7 +38,7 @@ class Symbol(Base):
     name = Column(String)
 
     #: e.g., AMZN, GOOG, 035720
-    code = Column(String)
+    symbol = Column(String)
 
     market = relationship('Market', backref=backref('symbols'))
 
@@ -49,13 +51,17 @@ class Ticker(Base):
 
     symbol = relationship('Symbol', backref=backref('tickers'))
 
-    # timestamp = Column()
-    # granularity = Column() # e.g., 5 min, 1 day, 1 week, etc.
-    # volume = Column()
-    # open = Column()
-    # close = Column()
-    # low = Column()
-    # high = Column()
+    timestamp = Column(DateTime)
+    granularity = Column(Enum('1sec', '1min', '5min', '1hour', '1week', '1month'))
+    volume = Column(Integer)
+    # The purpose of this project is not to create an accounting software
+    # providing 100% precision, but it is rather a statistical tool providing
+    # reasonable performance and adequate precision. Hence the use of
+    # floating point type is an acceptable compromise.
+    open = Column(Float(precision=64))
+    close = Column(Float(precision=64))
+    low = Column(Float(precision=64))
+    high = Column(Float(precision=64))
 
 
 class Article(Base):

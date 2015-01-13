@@ -12,8 +12,7 @@ def get_engine(db_uri):
 
 
 def get_session(engine):
-    Session = sessionmaker(bind=engine)
-    return Session()
+    return sessionmaker(bind=engine)()
 
 
 @click.group()
@@ -55,8 +54,8 @@ def insert_market(db_uri, market_id, market_name, open, close):
 
 @cli.command()
 @click.option('--db-uri', default=DEFAULT_DB_URI, help='Database URI')
-@click.option('--market_id', help='Market ID (integer)')
-@click.option('--filename', help='File containing symbols')
+@click.option('--market-id', required=True, help='Market ID (integer)')
+@click.option('--filename', required=True, help='File containing symbols')
 def import_symbols(db_uri, market_id, filename):
     """Imports symbols from a text file which contains one symbol per line."""
     engine = get_engine(db_uri)
@@ -65,7 +64,7 @@ def import_symbols(db_uri, market_id, filename):
         for line in fin:
             symbol = Symbol(
                 market_id=int(market_id),
-                name=line.strip(),
+                symbol=line.strip(),
             )
             session.add(symbol)
         session.commit()
