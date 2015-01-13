@@ -23,6 +23,8 @@ class Market(Base):
     #: Denotes time at which the market closes (e.g., 900 for 15:00)
     close = Column(Integer)
 
+    currency = Column(String)
+
     description = Column(Text)
 
 
