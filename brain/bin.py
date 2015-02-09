@@ -2,6 +2,8 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from brain.models import Base, Market, Symbol
+from brain.importer import YahooImporter
+from brain.stock_parser import YahooStockParser
 import click
 
 
@@ -69,6 +71,17 @@ def import_symbols(db_uri, market_id, filename):
             )
             session.add(symbol)
         session.commit()
+
+
+
+@cli.command()
+@click.option('--db-uri', default=DEFAULT_DB_URI, help='Database URI')
+def import_tickers(db_uri):
+    session = get_session(get_engine(db_uri))
+    parser = YahooStockParser()
+    parser.load('tmp/035720.KQ.txt')
+    importer = YahooImporter(session)
+    importer.import_(parser)
 
 
 if __name__ == '__main__':
