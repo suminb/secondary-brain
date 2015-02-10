@@ -25,16 +25,20 @@ class YahooImporter(Importer):
         """
         query = self.session.query(Symbol).filter(Symbol.symbol == parser.symbol)
 
-        if not self.session.query(query.exists()):
-            symbol = Symbol.create(name='(TO BE FILLED)', symbol=parser.symbol)
+        if not self.session.query(query.exists()).scalar():
+            symbol = Symbol.create(name='(TO BE FILLED)', symbol=parser.symbol,
+                                   session=self.session)
         else:
             symbol = query.first()
 
         for timestamp, volume, open, close, low, high in parser.quotes:
             ticker = Ticker.create(
                 symbol=symbol,
+                granularity=parser.granularity,
                 timestamp=timestamp,
                 volume=volume,
                 open=open, close=close,
                 low=low, high=high,
                 session=self.session)
+
+            # Deal with cases where duplicated entry is found

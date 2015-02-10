@@ -79,7 +79,7 @@ def import_symbols(db_uri, market_id, filename):
 def import_tickers(db_uri):
     session = get_session(get_engine(db_uri))
     parser = YahooStockParser()
-    parser.load('tmp/035720.KQ.txt')
+    parser.load('tmp/JUNO.txt')
     importer = YahooImporter(session)
     importer.import_(parser)
 

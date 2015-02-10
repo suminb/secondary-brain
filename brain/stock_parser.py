@@ -64,7 +64,13 @@ class YahooStockParser(StockParser):
 
     @property
     def granularity(self):
-        return self.meta['dataGranularity']
+        mappings = {
+            '1m': '1min',
+            '5m': '5min',
+        }
+        key = self.meta['dataGranularity']
+
+        return mappings[key] if key in mappings else None
 
 
 # For debugging purposes

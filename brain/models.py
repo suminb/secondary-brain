@@ -71,7 +71,8 @@ class Symbol(Base, CRUDMixin):
     """This may represents a particular company (e.g., Google, Microsoft, etc.)
     or an index (e.g., S&P 500, KOSPI 200, etc.)"""
     __tablename__ = 'symbol'
-    __table_args__ = (UniqueConstraint('market_id', 'symbol', name='unique_symbol'),)
+    __table_args__ = (UniqueConstraint('market_id', 'symbol',
+                                       name='unique_symbol'),)
 
     id = Column(Integer, primary_key=True)
     market_id = Column(BigInteger, ForeignKey('market.id'))
@@ -82,14 +83,16 @@ class Symbol(Base, CRUDMixin):
     #: e.g., AMZN, GOOG, 035720
     symbol = Column(String)
 
-    # currency
-    # instrument type
+    currency = Column(String)
+    instrument_type = Column(String)  # TODO: Make this enum
 
     market = relationship('Market', backref=backref('symbols'))
 
 
 class Ticker(Base, CRUDMixin):
     __tablename__ = 'ticker'
+    __table_args__ = (UniqueConstraint('symbol_id', 'timestamp', 'granularity',
+                                       name='unique_ticker'),)
 
     id = Column(Integer, primary_key=True)
     symbol_id = Column(BigInteger, ForeignKey('symbol.id'))
@@ -97,7 +100,8 @@ class Ticker(Base, CRUDMixin):
     symbol = relationship('Symbol', backref=backref('tickers'))
 
     timestamp = Column(Integer)
-    granularity = Column(Enum('1sec', '1min', '5min', '1hour', '1week', '1month', name='granularity'))
+    granularity = Column(Enum('1sec', '1min', '5min', '1hour', '1week',
+                              '1month', name='granularity'))
     volume = Column(Integer)
     # The purpose of this project is not to create an accounting software
     # providing 100% precision, but it is rather a statistical tool providing
