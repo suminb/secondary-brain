@@ -8,7 +8,46 @@ from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
 
-class Market(Base):
+class CRUDMixin(object):
+    """Copied from https://realpython.com/blog/python/python-web-applications-with-flask-part-ii/
+    """  # noqa
+
+    __table_args__ = {'extend_existing': True}
+
+    id = Column(Integer, primary_key=True)
+
+    @classmethod
+    def create(cls, session, commit: bool=True, **kwargs):
+        instance = cls(**kwargs)
+        return instance.save(session, commit=commit)
+
+    @classmethod
+    def get(cls, id: int):
+        return cls.query.get(id)
+
+    # We will also proxy Flask-SqlAlchemy's get_or_44
+    # for symmetry
+    @classmethod
+    def get_or_404(cls, id: int):
+        return cls.query.get_or_404(id)
+
+    def update(self, commit: bool=True, **kwargs):
+        for attr, value in kwargs.iteritems():
+            setattr(self, attr, value)
+        return commit and self.save() or self
+
+    def save(self, session, commit: bool=True):
+        session.add(self)
+        if commit:
+            session.commit()
+        return self
+
+    def delete(self, session, commit: bool=True):
+        session.delete(self)
+        return commit and session.commit()
+
+
+class Market(Base, CRUDMixin):
     __tablename__ = 'market'
 
     id = Column(Integer, primary_key=True)
@@ -28,7 +67,7 @@ class Market(Base):
     description = Column(Text)
 
 
-class Symbol(Base):
+class Symbol(Base, CRUDMixin):
     """This may represents a particular company (e.g., Google, Microsoft, etc.)
     or an index (e.g., S&P 500, KOSPI 200, etc.)"""
     __tablename__ = 'symbol'
@@ -43,10 +82,13 @@ class Symbol(Base):
     #: e.g., AMZN, GOOG, 035720
     symbol = Column(String)
 
+    # currency
+    # instrument type
+
     market = relationship('Market', backref=backref('symbols'))
 
 
-class Ticker(Base):
+class Ticker(Base, CRUDMixin):
     __tablename__ = 'ticker'
 
     id = Column(Integer, primary_key=True)
@@ -54,7 +96,7 @@ class Ticker(Base):
 
     symbol = relationship('Symbol', backref=backref('tickers'))
 
-    timestamp = Column(DateTime)
+    timestamp = Column(Integer)
     granularity = Column(Enum('1sec', '1min', '5min', '1hour', '1week', '1month', name='granularity'))
     volume = Column(Integer)
     # The purpose of this project is not to create an accounting software
@@ -67,7 +109,7 @@ class Ticker(Base):
     high = Column(Float(precision=64))
 
 
-class Article(Base):
+class Article(Base, CRUDMixin):
     """Represents a news/blog article"""
     __tablename__ = 'article'
 

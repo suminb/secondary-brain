@@ -26,7 +26,15 @@ class YahooImporter(Importer):
         query = self.session.query(Symbol).filter(Symbol.symbol == parser.symbol)
 
         if not self.session.query(query.exists()):
-            pass
+            symbol = Symbol.create(name='(TO BE FILLED)', symbol=parser.symbol)
+        else:
+            symbol = query.first()
 
         for timestamp, volume, open, close, low, high in parser.quotes:
-            print(timestamp, volume, open, close, low, high)
+            ticker = Ticker.create(
+                symbol=symbol,
+                timestamp=timestamp,
+                volume=volume,
+                open=open, close=close,
+                low=low, high=high,
+                session=self.session)
