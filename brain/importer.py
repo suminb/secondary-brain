@@ -1,6 +1,6 @@
 from brain.stock_parser import StockParser
 from brain.models import Symbol, Ticker
-
+from datetime import datetime
 
 class Importer(object):
     def __init__(self):
@@ -35,7 +35,7 @@ class YahooImporter(Importer):
             ticker = Ticker.create(
                 symbol=symbol,
                 granularity=parser.granularity,
-                timestamp=timestamp,
+                timestamp=datetime.fromtimestamp(timestamp),
                 volume=volume,
                 open=open, close=close,
                 low=low, high=high,

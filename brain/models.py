@@ -99,7 +99,7 @@ class Ticker(Base, CRUDMixin):
 
     symbol = relationship('Symbol', backref=backref('tickers'))
 
-    timestamp = Column(Integer)
+    timestamp = Column(DateTime)
     granularity = Column(Enum('1sec', '1min', '5min', '1hour', '1week',
                               '1month', name='granularity'))
     volume = Column(Integer)
