@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request, render_template
-from flask.ext.login import LoginManager, AnonymousUser
+from flask.ext.login import LoginManager
 from flask.ext.sqlalchemy import SQLAlchemy
 
 import sys, os

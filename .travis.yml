@@ -1,0 +1,14 @@
+language: python
+
+python:
+  - "3.4"
+
+install:
+  - pip install -r requirements.txt --use-mirrors
+
+script:
+  - export PYTHONPATH=$PYTHONPATH:.
+  - py.test tests --cov brain --durations=10
+
+after_success:
+  - coveralls
