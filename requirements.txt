@@ -1,5 +1,6 @@
 sqlalchemy
 click
+requests
 pytest
 pytest-cov
 coveralls
