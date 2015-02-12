@@ -1,6 +1,8 @@
 from brain.stock_parser import StockParser
 from brain.models import Symbol, Ticker
 from datetime import datetime
+from sqlalchemy.exc import IntegrityError
+
 
 class Importer(object):
     def __init__(self):
@@ -32,13 +34,15 @@ class YahooImporter(Importer):
             symbol = query.first()
 
         for timestamp, volume, open, close, low, high in parser.quotes:
-            ticker = Ticker.create(
-                symbol=symbol,
-                granularity=parser.granularity,
-                timestamp=datetime.fromtimestamp(timestamp),
-                volume=volume,
-                open=open, close=close,
-                low=low, high=high,
-                session=self.session)
+            try:
+                ticker = Ticker.create(
+                    symbol=symbol,
+                    granularity=parser.granularity,
+                    timestamp=datetime.fromtimestamp(timestamp),
+                    volume=volume,
+                    open=open, close=close,
+                    low=low, high=high,
+                    session=self.session)
 
-            # Deal with cases where duplicated entry is found
+            except IntegrityError:
+                self.session.rollback()

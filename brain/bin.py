@@ -26,7 +26,7 @@ def cli():
 @cli.command()
 @click.option('--db-uri', default=DEFAULT_DB_URI, help='Database URI')
 def create_db(db_uri):
-    """Creates an empty database and tables."""
+    """Create an empty database and tables."""
     engine = get_engine(db_uri)
     Base.metadata.create_all(engine)
 
@@ -40,7 +40,7 @@ def create_db(db_uri):
 @click.option('--close', required=True,
               help='Time at which the market closes (e.g., 900 for 15:00)')
 def insert_market(db_uri, market_id, market_name, open, close):
-    """Manually inserts a market entity to the database."""
+    """Manually insert a market entity to the database."""
     assert 0 <= int(open) < 60 * 24
     assert 0 <= int(close) < 60 * 24
 
@@ -60,7 +60,7 @@ def insert_market(db_uri, market_id, market_name, open, close):
 @click.option('--market-id', required=True, help='Market ID (integer)')
 @click.option('--filename', required=True, help='File containing symbols')
 def import_symbols(db_uri, market_id, filename):
-    """Imports symbols from a text file which contains one symbol per line."""
+    """Import symbols from a text file which contains one symbol per line."""
     engine = get_engine(db_uri)
     session = get_session(engine)
     with open(filename, 'r') as fin:
@@ -76,10 +76,12 @@ def import_symbols(db_uri, market_id, filename):
 
 @cli.command()
 @click.option('--db-uri', default=DEFAULT_DB_URI, help='Database URI')
-def import_tickers(db_uri):
+@click.option('-f', '--filename', required=True, help='JSON file path')
+def import_tickers(db_uri, filename):
+    """Import tickers from a JSON file."""
     session = get_session(get_engine(db_uri))
     parser = YahooStockParser()
-    parser.load('tmp/JUNO.txt')
+    parser.load(filename)
     importer = YahooImporter(session)
     importer.import_(parser)
 
