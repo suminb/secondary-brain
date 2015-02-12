@@ -1,5 +1,5 @@
-from brain.stock_parser import StockParser
-from brain.models import Symbol, Ticker
+from stock.stock_parser import StockParser
+from stock.models import Symbol, Ticker
 from datetime import datetime
 from sqlalchemy.exc import IntegrityError
 

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from brain.models import Base, Market, Symbol
-from brain.importer import YahooImporter
-from brain.stock_parser import YahooStockParser
+from stock.models import Base, Market, Symbol
+from stock.importer import YahooImporter
+from stock.stock_parser import YahooStockParser
 import click
 
 
