@@ -8,7 +8,7 @@ install:
 
 script:
   - export PYTHONPATH=$PYTHONPATH:.
-  - py.test tests --cov brain --durations=10
+  - py.test tests --cov stock --durations=10
 
 after_success:
   - coveralls
