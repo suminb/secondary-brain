@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from stock.models import Base, Market, Symbol
+from stock.models import Base, Market, Symbol, Granularity
 from stock.importer import YahooImporter
 from stock.stock_parser import YahooStockParser
 from stock.fetcher import YahooFetcher
@@ -93,10 +93,13 @@ def import_tickers(db_uri, filename):
 @cli.command()
 @click.option('--db-uri', default=DEFAULT_DB_URI, help='Database URI')
 @click.option('-s', '--symbol', required=True, help='Symbol')
-@click.option('-g', '--granularity', required=True, help='Data granularity')
-def fetch(db_uri, symbol, granularity):
+@click.option('-d', '--date', required=True, help='Date (YYYY-mm-dd)')
+@click.option('-g', '--granularity', required=True, help='Data granularity (1min, 1week, etc.)')
+def fetch(db_uri, symbol, date, granularity: Granularity):
     fetcher = YahooFetcher(logger=log)
-    raw_data = fetcher.fetch(symbol, datetime.now() - timedelta(days=1), datetime.now(), granularity)
+    begin_date = datetime.strptime(date, '%Y-%m-%d')
+    end_date = begin_date + timedelta(days=1)
+    raw_data = fetcher.fetch(symbol, begin_date, end_date, granularity)
 
     parser = YahooStockParser(logger=log)
     parser.load(raw_data)

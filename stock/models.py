@@ -4,8 +4,11 @@ from sqlalchemy import Column, Integer, BigInteger, String, Text, DateTime, \
 from sqlalchemy import ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.declarative import declarative_base
+import enum
 
 Base = declarative_base()
+
+Granularity = enum.Enum('Granularity', '1min 5min 1day 1week 1month')
 
 
 class CRUDMixin(object):
