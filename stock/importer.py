@@ -5,17 +5,15 @@ from sqlalchemy.exc import IntegrityError
 
 
 class Importer(object):
-    def __init__(self):
-        raise NotImplementedError()
+    def __init__(self, session, logger):
+        self.session = session
+        self.logger = logger
 
     def import_(self, parser: StockParser) -> None:
         raise NotImplementedError()
 
 
 class YahooImporter(Importer):
-    def __init__(self, session):
-        self.session = session
-
     def import_(self, parser: StockParser) -> None:
         """
         TODO:

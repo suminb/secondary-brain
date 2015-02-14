@@ -4,10 +4,14 @@ from sqlalchemy.orm import sessionmaker
 from stock.models import Base, Market, Symbol
 from stock.importer import YahooImporter
 from stock.stock_parser import YahooStockParser
+from stock.fetcher import YahooFetcher
+from datetime import datetime, timedelta
+from logbook import Logger
 import click
 
 
 DEFAULT_DB_URI = 'sqlite:///default.db'
+log = Logger(__file__)
 
 
 def get_engine(db_uri):
@@ -83,6 +87,22 @@ def import_tickers(db_uri, filename):
     parser = YahooStockParser()
     parser.load(filename)
     importer = YahooImporter(session)
+    importer.import_(parser)
+
+
+@cli.command()
+@click.option('--db-uri', default=DEFAULT_DB_URI, help='Database URI')
+@click.option('-s', '--symbol', required=True, help='Symbol')
+@click.option('-g', '--granularity', required=True, help='Data granularity')
+def fetch(db_uri, symbol, granularity):
+    fetcher = YahooFetcher(logger=log)
+    raw_data = fetcher.fetch(symbol, datetime.now() - timedelta(days=1), datetime.now(), granularity)
+
+    parser = YahooStockParser(logger=log)
+    parser.load(raw_data)
+
+    session = get_session(get_engine(db_uri))
+    importer = YahooImporter(session=session, logger=log)
     importer.import_(parser)
 
 

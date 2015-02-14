@@ -1,6 +1,7 @@
 sqlalchemy
 click
 requests
+logbook
 pytest
 pytest-cov
 coveralls
