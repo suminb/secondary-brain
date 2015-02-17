@@ -94,7 +94,7 @@ def import_tickers(db_uri, filename):
 @click.option('--db-uri', default=DEFAULT_DB_URI, help='Database URI')
 @click.option('-s', '--symbol', required=True, help='Symbol')
 @click.option('-d', '--date', required=True, help='Date (YYYY-mm-dd)')
-@click.option('-g', '--granularity', required=True, help='Data granularity (1min, 1week, etc.)')
+@click.option('-g', '--granularity', required=True, help='Data granularity (1min, 1day, 1week, etc.)')
 def fetch(db_uri, symbol, date, granularity: Granularity):
     fetcher = YahooFetcher(logger=log)
     begin_date = datetime.strptime(date, '%Y-%m-%d')

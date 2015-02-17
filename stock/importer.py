@@ -31,6 +31,8 @@ class YahooImporter(Importer):
         else:
             symbol = query.first()
 
+        count = 0
+
         for timestamp, volume, open, close, low, high in parser.quotes:
             try:
                 ticker = Ticker.create(
@@ -42,5 +44,9 @@ class YahooImporter(Importer):
                     low=low, high=high,
                     session=self.session)
 
+                count += 1
+
             except IntegrityError:
                 self.session.rollback()
+
+        self.logger.info('Imported {} tickers'.format(count))
