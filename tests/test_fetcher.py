@@ -9,8 +9,8 @@ logger = Logger(__file__)
 
 def test_fetcher():
     fetcher = YahooFetcher(logger=logger)
-    raw_data = fetcher.fetch('AAPL', datetime.now() - timedelta(days=1),
-                             datetime.now(), '1min')
+    raw_data = fetcher.fetch('AAPL', datetime.now() - timedelta(days=365),
+                             datetime.now(), '1day')
 
     objects = json.loads(raw_data)
 
