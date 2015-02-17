@@ -1,21 +1,19 @@
-from brain.stock_parser import StockParser
-from brain.models import Symbol, Ticker
+from stock.stock_parser import StockParser
+from stock.models import Symbol, Ticker
 from datetime import datetime
 from sqlalchemy.exc import IntegrityError
 
 
 class Importer(object):
-    def __init__(self):
-        raise NotImplementedError()
+    def __init__(self, session, logger):
+        self.session = session
+        self.logger = logger
 
     def import_(self, parser: StockParser) -> None:
         raise NotImplementedError()
 
 
 class YahooImporter(Importer):
-    def __init__(self, session):
-        self.session = session
-
     def import_(self, parser: StockParser) -> None:
         """
         TODO:
@@ -33,6 +31,8 @@ class YahooImporter(Importer):
         else:
             symbol = query.first()
 
+        count = 0
+
         for timestamp, volume, open, close, low, high in parser.quotes:
             try:
                 ticker = Ticker.create(
@@ -44,5 +44,9 @@ class YahooImporter(Importer):
                     low=low, high=high,
                     session=self.session)
 
+                count += 1
+
             except IntegrityError:
                 self.session.rollback()
+
+        self.logger.info('Imported {} tickers'.format(count))

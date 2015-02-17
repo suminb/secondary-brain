@@ -28,13 +28,14 @@ class StockParser(object):
 
 
 class YahooStockParser(StockParser):
-    def __init__(self):
+    def __init__(self, logger):
         self.__symbol = None
         self.__quotes = None
         self.meta = None
+        self.logger = logger
 
-    def load(self, filepath):
-        raw_objects = self.load_raw_objects(filepath)
+    def load(self, raw_data: str):
+        raw_objects = json.loads(raw_data)
         self.meta = raw_objects['data']['meta']
         self.__quotes = self.load_quotes(raw_objects['data']['timestamp'],
                                          raw_objects['data']['indicators']['quote'])
@@ -67,6 +68,8 @@ class YahooStockParser(StockParser):
         mappings = {
             '1m': '1min',
             '5m': '5min',
+            '1d': '1day',
+            '1y': '1year',
         }
         key = self.meta['dataGranularity']
 

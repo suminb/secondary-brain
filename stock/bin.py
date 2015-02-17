@@ -1,13 +1,17 @@
 # -*- coding: utf-8 -*-
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from brain.models import Base, Market, Symbol
-from brain.importer import YahooImporter
-from brain.stock_parser import YahooStockParser
+from stock.models import Base, Market, Symbol, Granularity
+from stock.importer import YahooImporter
+from stock.stock_parser import YahooStockParser
+from stock.fetcher import YahooFetcher
+from datetime import datetime, timedelta
+from logbook import Logger
 import click
 
 
 DEFAULT_DB_URI = 'sqlite:///default.db'
+log = Logger(__file__)
 
 
 def get_engine(db_uri):
@@ -83,6 +87,25 @@ def import_tickers(db_uri, filename):
     parser = YahooStockParser()
     parser.load(filename)
     importer = YahooImporter(session)
+    importer.import_(parser)
+
+
+@cli.command()
+@click.option('--db-uri', default=DEFAULT_DB_URI, help='Database URI')
+@click.option('-s', '--symbol', required=True, help='Symbol')
+@click.option('-d', '--date', required=True, help='Date (YYYY-mm-dd)')
+@click.option('-g', '--granularity', required=True, help='Data granularity (1min, 1day, 1week, etc.)')
+def fetch(db_uri, symbol, date, granularity: Granularity):
+    fetcher = YahooFetcher(logger=log)
+    begin_date = datetime.strptime(date, '%Y-%m-%d')
+    end_date = YahooFetcher.get_end_datetime(begin_date, granularity)
+    raw_data = fetcher.fetch(symbol, begin_date, end_date, granularity)
+
+    parser = YahooStockParser(logger=log)
+    parser.load(raw_data)
+
+    session = get_session(get_engine(db_uri))
+    importer = YahooImporter(session=session, logger=log)
     importer.import_(parser)
 
 

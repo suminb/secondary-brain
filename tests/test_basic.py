@@ -9,7 +9,7 @@ def testapp():
 
 
 def test_models():
-    from brain.models import Market, Symbol, Ticker
+    from stock.models import Market, Symbol, Ticker
     assert hasattr(Market, 'id')
     assert hasattr(Symbol, 'id')
     assert hasattr(Ticker, 'id')
@@ -17,7 +17,7 @@ def test_models():
 
 def test_commands():
     from click.testing import CliRunner
-    from brain.bin import DEFAULT_DB_URI, get_engine, get_session, create_db, \
+    from stock.bin import DEFAULT_DB_URI, get_engine, get_session, create_db, \
         insert_market
 
     engine = get_engine(DEFAULT_DB_URI)
