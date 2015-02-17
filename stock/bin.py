@@ -98,7 +98,7 @@ def import_tickers(db_uri, filename):
 def fetch(db_uri, symbol, date, granularity: Granularity):
     fetcher = YahooFetcher(logger=log)
     begin_date = datetime.strptime(date, '%Y-%m-%d')
-    end_date = YahooFetcher.get_end_datetime(date, granularity)
+    end_date = YahooFetcher.get_end_datetime(begin_date, granularity)
     raw_data = fetcher.fetch(symbol, begin_date, end_date, granularity)
 
     parser = YahooStockParser(logger=log)

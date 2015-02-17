@@ -52,7 +52,7 @@ class YahooFetcher(Fetcher):
 
     @classmethod
     def get_end_datetime(cls, begin_datetime: datetime,
-                         granularity: Granularity):
+                         granularity: Granularity) -> datetime:
 
         return begin_datetime + cls.GRANULARITY_RANGE_MAPPINGS[granularity]['timedelta']
 
