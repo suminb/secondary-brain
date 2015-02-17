@@ -1,5 +1,5 @@
 from stock.models import Granularity
-from datetime import datetime
+from datetime import datetime, timedelta
 import requests
 import urllib
 import json
@@ -23,24 +23,38 @@ class Fetcher(object):
 
 
 class YahooFetcher(Fetcher):
-    @staticmethod
-    def build_url(symbol: str, begin_datetime: datetime,
-              end_datetime: datetime, granularity: str):
+    # TODO: Consider leap years
+    GRANULARITY_RANGE_MAPPINGS = {
+        '1min': dict(str='1d', timedelta=timedelta(days=1)),
+        '5min': dict(str='5d', timedelta=timedelta(days=5)),
+        '1day': dict(str='1y', timedelta=timedelta(days=365)),
+        '1week': dict(str='5y', timedelta=timedelta(days=365 * 5)),
+        '1month': dict(str='10y', timedelta=timedelta(days=365 * 10))
+    }
+
+    @classmethod
+    def build_url(cls, symbol: str, begin_datetime: datetime,
+                  end_datetime: datetime, granularity: Granularity):
 
         query_string = json.dumps(dict(s=symbol + '+Interactive'))
         return 'http://finance.yahoo.com/_td_charts_api/resource/' \
                'charts;comparisonTickers=;events=div%7Csplit%7Cearn;' \
                'gmtz=9;indicators=quote;period1={};period2={};' \
                'queryString=%7B%22s%22%3A%22{}%2BInteractive%22%7D;' \
-               'range=1d;rangeSelected=undefined;ticker={};' \
-               'useMock=false'.format(
-            begin_datetime.strftime('%s'), end_datetime.strftime('%s'),
-            urllib.parse.quote_plus(query_string), urllib.parse.quote_plus(symbol)
+               'range={};rangeSelected=undefined;ticker={};' \
+               'useMock=false'.format( \
+            begin_datetime.strftime('%s'),
+            cls.get_end_datetime(begin_datetime, granularity).strftime('%s'),
+            urllib.parse.quote_plus(query_string),
+            cls.GRANULARITY_RANGE_MAPPINGS[granularity]['str'],
+            urllib.parse.quote_plus(symbol)
         )
 
-    def get_range(self, granularity: Granularity):
-        # TODO: Check if granularity is valid
-        return None
+    @classmethod
+    def get_end_datetime(cls, begin_datetime: datetime,
+                         granularity: Granularity):
+
+        return begin_datetime + cls.GRANULARITY_RANGE_MAPPINGS[granularity]['timedelta']
 
     def fetch(self, symbol: str, begin_datetime: datetime,
               end_datetime: datetime, granularity: str):

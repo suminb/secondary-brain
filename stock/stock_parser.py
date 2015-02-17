@@ -68,6 +68,8 @@ class YahooStockParser(StockParser):
         mappings = {
             '1m': '1min',
             '5m': '5min',
+            '1d': '1day',
+            '1y': '1year',
         }
         key = self.meta['dataGranularity']
 
