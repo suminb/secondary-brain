@@ -44,7 +44,7 @@ class YahooFetcher(Fetcher):
                'range={};rangeSelected=undefined;ticker={};' \
                'useMock=false'.format( \
             begin_datetime.strftime('%s'),
-            cls.get_end_datetime(begin_datetime, granularity).strftime('%s'),
+            end_datetime.strftime('%s'),
             urllib.parse.quote_plus(query_string),
             cls.GRANULARITY_RANGE_MAPPINGS[granularity]['str'],
             urllib.parse.quote_plus(symbol)
