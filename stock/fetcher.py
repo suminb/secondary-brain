@@ -37,6 +37,17 @@ class YahooFetcher(Fetcher):
                   end_datetime: datetime, granularity: Granularity):
 
         query_string = json.dumps(dict(s=symbol + '+Interactive'))
+        return 'https://finance-yql.media.yahoo.com/v7/finance/chart/{4}' \
+            '?period2={1}&period1={0}&interval=1m&indicators=quote' \
+            '&includeTimestamps=true&includePrePost=true' \
+            '&events=div%7Csplit%7Cearn&corsDomain=finance.yahoo.com' \
+            .format(
+                begin_datetime.strftime('%s'),
+                end_datetime.strftime('%s'),
+                urllib.parse.quote_plus(query_string),
+                cls.GRANULARITY_RANGE_MAPPINGS[granularity]['str'],
+                urllib.parse.quote_plus(symbol)
+            )
         return 'http://finance.yahoo.com/_td_charts_api/resource/' \
                'charts;comparisonTickers=;events=div%7Csplit%7Cearn;' \
                'gmtz=9;indicators=quote;period1={};period2={};' \

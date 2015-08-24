@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import os
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from stock.models import Base, Market, Symbol, Granularity
@@ -10,7 +12,7 @@ from logbook import Logger
 import click
 
 
-DEFAULT_DB_URI = 'sqlite:///default.db'
+DEFAULT_DB_URI = os.environ.get('DB_URI', 'sqlite:///default.db')
 log = Logger(__file__)
 
 
@@ -75,7 +77,6 @@ def import_symbols(db_uri, market_id, filename):
             )
             session.add(symbol)
         session.commit()
-
 
 
 @cli.command()

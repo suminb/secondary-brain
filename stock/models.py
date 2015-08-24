@@ -110,10 +110,10 @@ class Ticker(Base, CRUDMixin):
     # providing 100% precision, but it is rather a statistical tool providing
     # reasonable performance and adequate precision. Hence the use of
     # floating point type is an acceptable compromise.
-    open = Column(Float(precision=64))
-    close = Column(Float(precision=64))
-    low = Column(Float(precision=64))
-    high = Column(Float(precision=64))
+    open = Column(Float(precision=53))
+    close = Column(Float(precision=53))
+    low = Column(Float(precision=53))
+    high = Column(Float(precision=53))
 
 
 class Article(Base, CRUDMixin):

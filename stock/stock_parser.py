@@ -35,10 +35,10 @@ class YahooStockParser(StockParser):
         self.logger = logger
 
     def load(self, raw_data: str):
-        raw_objects = json.loads(raw_data)
-        self.meta = raw_objects['data']['meta']
-        self.__quotes = self.load_quotes(raw_objects['data']['timestamp'],
-                                         raw_objects['data']['indicators']['quote'])
+        raw_objects = json.loads(raw_data)['chart']['result'][0]
+        self.meta = raw_objects['meta']
+        self.__quotes = self.load_quotes(raw_objects['timestamp'],
+                                         raw_objects['indicators']['quote'])
 
         self.__symbol = self.meta['symbol']
 
