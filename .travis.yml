@@ -13,7 +13,7 @@ addons:
 
 install:
   - pip install -r requirements.txt
-  - pip install -r articles/requirements.txt
+  # - pip install -r articles/requirements.txt
 
 script:
   - export PYTHONPATH=$PYTHONPATH:.
